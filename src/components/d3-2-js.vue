@@ -118,9 +118,9 @@ export default {
       }
       let copiedDataPie = dataPie.slice()
       copiedDataPie = copiedDataPie.filter((item) => item.value > 0)
-      if (dataPie.filter((item) => item.value > 19).length < dataPie.length) {
-        // ? половинчатый график, если каждое значение меньше 20
-        const sumDataPie = dataPie.reduce((acc, item) => acc + item.value, 0)
+      const sumDataPie = dataPie.reduce((acc, item) => acc + item.value, 0)
+      if (sumDataPie < 40) {
+        // ? половинчатый график, если сумма значений < 40
         const whiteSemiCircleValue = sumDataPie
         copiedDataPie.push({
           id: 4,
@@ -130,6 +130,18 @@ export default {
           color: '#F5F5F5',
         })
       }
+      // if (dataPie.filter((item) => item.value > 19).length < dataPie.length) {
+      //  // ? половинчатый график, если каждое значение меньше 20
+      //  const sumDataPie = dataPie.reduce((acc, item) => acc + item.value, 0)
+      //  const whiteSemiCircleValue = sumDataPie
+      //  copiedDataPie.push({
+      //    id: 4,
+      //    name: 'whiteSemiCircle',
+      //    key: 'whiteSemiCircle',
+      //    value: whiteSemiCircleValue,
+      //    color: '#F5F5F5',
+      //  })
+      // }
       const viewWidth = 800
       const thickness = 0
       const viewHeight = 500
