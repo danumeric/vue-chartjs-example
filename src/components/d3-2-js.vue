@@ -271,7 +271,7 @@ export default {
  
 <style lang="scss"  >
 .temp {
-  margin: 50px auto 20px auto;
+  margin: 50px auto 55px auto;
 
   width: 350px;
   &__row {
