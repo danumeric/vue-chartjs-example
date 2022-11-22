@@ -2,6 +2,17 @@
   <div class="wrapper">
     <div class="temp">
       <div class="temp__row">
+        100% круга =
+        <input
+          v-model="tempSumValuesCircle"
+          width="30px"
+          min="0"
+          type="number"
+          @input="createPie(dataPieOne, '#diagram')"
+        />
+      </div>
+
+      <div class="temp__row">
         Подтверждено бронирований
         <input
           v-model="dataPieOne[0].value"
@@ -41,7 +52,7 @@
     </div>
 
     <div id="diagram" class="diagram-pie"></div>
-    <hr />
+    <!-- <hr />
     <div class="temp">
       <div class="temp__row">
         Подтверждено бронирований
@@ -82,7 +93,7 @@
       </div>
     </div>
 
-    <div id="diagram-2" class="diagram-pie"></div>
+    <div id="diagram-2" class="diagram-pie"></div> -->
   </div>
 </template>
 
@@ -93,11 +104,12 @@ export default {
   name: 'D3Js',
   data() {
     return {
+      tempSumValuesCircle: 10,
       dataPieOne: [
         { id: 0, name: 'Подтверждено бронирований', key: 'approved', value: 1, color: '#9B0D89' },
-        { id: 1, name: 'Поступило запросов', key: 'recieved', value: 5, color: '#164286' },
-        { id: 2, name: 'Завершено бронирований', key: 'completed', value: 2, color: '#7517A9' },
-        { id: 3, name: 'Отменено бронирований', key: 'canceled', value: 3, color: '#F79E1B' },
+        { id: 1, name: 'Поступило запросов', key: 'recieved', value: 3, color: '#164286' },
+        { id: 2, name: 'Завершено бронирований', key: 'completed', value: 1, color: '#7517A9' },
+        { id: 3, name: 'Отменено бронирований', key: 'canceled', value: 2, color: '#F79E1B' },
       ],
       dataPieTwo: [
         { id: 0, name: 'Подтверждено бронирований', key: 'approved', value: 24, color: '#9B0D89' },
@@ -109,7 +121,7 @@ export default {
   },
   mounted() {
     this.createPie(this.dataPieOne, '#diagram')
-    this.createPie(this.dataPieTwo, '#diagram-2')
+    // this.createPie(this.dataPieTwo, '#diagram-2')
   },
   methods: {
     createPie(dataPie, anchor) {
@@ -119,9 +131,8 @@ export default {
       let copiedDataPie = dataPie.slice()
       copiedDataPie = copiedDataPie.filter((item) => item.value > 0)
       const sumDataPie = dataPie.reduce((acc, item) => acc + item.value, 0)
-      if (sumDataPie < 40) {
-        // ? половинчатый график, если сумма значений < 40
-        const whiteSemiCircleValue = sumDataPie
+      if (sumDataPie < this.tempSumValuesCircle) {
+        const whiteSemiCircleValue = this.tempSumValuesCircle - sumDataPie
         copiedDataPie.push({
           id: 4,
           name: 'whiteSemiCircle',
@@ -130,18 +141,18 @@ export default {
           color: '#F5F5F5',
         })
       }
-      // if (dataPie.filter((item) => item.value > 19).length < dataPie.length) {
-      //  // ? половинчатый график, если каждое значение меньше 20
-      //  const sumDataPie = dataPie.reduce((acc, item) => acc + item.value, 0)
-      //  const whiteSemiCircleValue = sumDataPie
-      //  copiedDataPie.push({
-      //    id: 4,
-      //    name: 'whiteSemiCircle',
-      //    key: 'whiteSemiCircle',
-      //    value: whiteSemiCircleValue,
-      //    color: '#F5F5F5',
-      //  })
+      // if (sumDataPie < 40) {
+      //   // ? половинчатый график, если сумма значений < 40
+      //   const whiteSemiCircleValue = sumDataPie
+      //   copiedDataPie.push({
+      //     id: 4,
+      //     name: 'whiteSemiCircle',
+      //     key: 'whiteSemiCircle',
+      //     value: whiteSemiCircleValue,
+      //     color: '#F5F5F5',
+      //   })
       // }
+
       const viewWidth = 800
       const thickness = 0
       const viewHeight = 500
@@ -160,7 +171,18 @@ export default {
       const formattedData = d3
         .pie()
         .padAngle(0.0174533)
-        .sortValues((a, b) => a - b)
+        .sort(null)
+        .sort((a, b) => {
+          console.log(a)
+
+          if (a.key === 'whiteSemiCircle') {
+            return 1
+          }
+          if (b.key === 'whiteSemiCircle') {
+            return -1
+          }
+          return a.value - b.value
+        })
         .value((d) => d.value)(copiedDataPie)
 
       const arcGenerator = d3
